@@ -162,7 +162,7 @@ float InnerDecklistNode::recursivePrice(bool countTotalCards) const
         return result;
 }
 
-bool InnerDecklistNode::compare(AbstractDecklistNode *other) const
+bool InnerDecklistNode::compare(AbstractDecklistNode *other, AbstractDecklistNode::SortMethod method) const
 {
 	InnerDecklistNode *other2 = dynamic_cast<InnerDecklistNode *>(other);
 	if (other2)
@@ -171,23 +171,29 @@ bool InnerDecklistNode::compare(AbstractDecklistNode *other) const
 		return false;
 }
 
-bool AbstractDecklistCardNode::compare(AbstractDecklistNode *other) const
+bool AbstractDecklistCardNode::compare(AbstractDecklistNode *other, AbstractDecklistNode::SortMethod method) const
 {
 	AbstractDecklistCardNode *other2 = dynamic_cast<AbstractDecklistCardNode *>(other);
-	if (other2)
-		return (getName() > other->getName());
-	else
+	if (other2) {
+		switch (method) {
+			case AbstractDecklistNode::ByName:
+				return (getName() > other->getName());
+			case AbstractDecklistNode::ByPrice:
+				return (int(100*getPrice()) > int(100*other2->getPrice()));
+		}
+	} else
 		return true;
 }
 
 class InnerDecklistNode::compareFunctor {
 private:
 	Qt::SortOrder order;
+	AbstractDecklistNode::SortMethod method;
 public:
-	compareFunctor(Qt::SortOrder _order) : order(_order) { }
+	compareFunctor(Qt::SortOrder _order, AbstractDecklistNode::SortMethod _method = AbstractDecklistNode::ByName) : order(_order), method(_method) { }
 	inline bool operator()(QPair<int, AbstractDecklistNode *> a, QPair<int, AbstractDecklistNode *> b) const
 	{
-		return (order == Qt::AscendingOrder) ^ (a.second->compare(b.second));
+		return (order == Qt::AscendingOrder) ^ (a.second->compare(b.second, method));
 	}
 };
 
@@ -238,7 +244,7 @@ void AbstractDecklistCardNode::writeElement(QXmlStreamWriter *xml)
 	xml->writeAttribute("name", getName());
 }
 
-QVector<QPair<int, int> > InnerDecklistNode::sort(Qt::SortOrder order)
+QVector<QPair<int, int> > InnerDecklistNode::sort(Qt::SortOrder order, AbstractDecklistNode::SortMethod method)
 {
 	QVector<QPair<int, int> > result(size());
 	
@@ -250,7 +256,7 @@ QVector<QPair<int, int> > InnerDecklistNode::sort(Qt::SortOrder order)
 	}
 	
 	// Sort temporary list
-	compareFunctor cmp(order);
+	compareFunctor cmp(order, method);
 	qSort(tempList.begin(), tempList.end(), cmp);
 	
 	// Map old indexes to new indexes and

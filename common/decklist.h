@@ -36,6 +36,8 @@ public:
 };
 
 class AbstractDecklistNode {
+public:
+	enum SortMethod { ByName, ByPrice };
 protected:
 	InnerDecklistNode *parent;
 public:
@@ -45,7 +47,7 @@ public:
 	InnerDecklistNode *getParent() const { return parent; }
 	int depth() const;
 	virtual int height() const = 0;
-	virtual bool compare(AbstractDecklistNode *other) const = 0;
+	virtual bool compare(AbstractDecklistNode *other, AbstractDecklistNode::SortMethod method = AbstractDecklistNode::ByName) const = 0;
 	
 	virtual bool readElement(QXmlStreamReader *xml) = 0;
 	virtual void writeElement(QXmlStreamWriter *xml) = 0;
@@ -68,8 +70,8 @@ public:
 	int height() const;
 	int recursiveCount(bool countTotalCards = false) const;
         float recursivePrice(bool countTotalCards = false) const;
-	bool compare(AbstractDecklistNode *other) const;
-	QVector<QPair<int, int> > sort(Qt::SortOrder order = Qt::AscendingOrder);
+	bool compare(AbstractDecklistNode *other, AbstractDecklistNode::SortMethod method = AbstractDecklistNode::ByName) const;
+	QVector<QPair<int, int> > sort(Qt::SortOrder order = Qt::AscendingOrder, AbstractDecklistNode::SortMethod method = AbstractDecklistNode::ByName);
 	
 	bool readElement(QXmlStreamReader *xml);
 	void writeElement(QXmlStreamWriter *xml);
@@ -86,7 +88,7 @@ public:
         virtual void setPrice(float _price) = 0;
         float getTotalPrice() const { return getNumber() * getPrice(); }
 	int height() const { return 0; }
-	bool compare(AbstractDecklistNode *other) const;
+	bool compare(AbstractDecklistNode *other, AbstractDecklistNode::SortMethod method = AbstractDecklistNode::ByName) const;
 	
 	bool readElement(QXmlStreamReader *xml);
 	void writeElement(QXmlStreamWriter *xml);
