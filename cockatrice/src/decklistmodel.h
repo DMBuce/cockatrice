@@ -46,7 +46,7 @@ public:
 	bool setData(const QModelIndex &index, const QVariant &value, int role);
 	bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
 	QModelIndex addCard(const QString &cardName, const QString &zoneName);
-	void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
+	void sort(int column, Qt::SortOrder order = Qt::AscendingOrder, AbstractDecklistNode::SortMethod method = AbstractDecklistNode::ByName);
 	void cleanList();
 	DeckLoader *getDeckList() const { return deckList; }
 	void setDeckList(DeckLoader *_deck);
@@ -57,7 +57,7 @@ private:
 	InnerDecklistNode *createNodeIfNeeded(const QString &name, InnerDecklistNode *parent);
 	QModelIndex nodeToIndex(AbstractDecklistNode *node) const;
 	void emitRecursiveUpdates(const QModelIndex &index);
-	void sortHelper(InnerDecklistNode *node, Qt::SortOrder order);
+	void sortHelper(InnerDecklistNode *node, Qt::SortOrder order, AbstractDecklistNode::SortMethod method);
 
 	void printDeckListNode(QTextCursor *cursor, InnerDecklistNode *node);
 

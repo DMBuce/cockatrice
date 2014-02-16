@@ -127,6 +127,7 @@ TabDeckEditor::TabDeckEditor(TabSupervisor *_tabSupervisor, QWidget *parent)
 
 	sortLabel = new QLabel();
 	sortDropdown = new QComboBox;
+	connect(sortDropdown, SIGNAL(currentIndexChanged(int)), this, SLOT(sortDeck(int)));
 	groupLabel = new QLabel();
 	groupDropdown = new QComboBox;
 	sortDropdown->addItem(tr("Name"));
@@ -329,6 +330,18 @@ void TabDeckEditor::updateComments()
 {
 	deckModel->getDeckList()->setComments(commentsEdit->toPlainText());
 	setModified(true);
+}
+
+void TabDeckEditor::sortDeck(int index)
+{
+	switch (index) {
+		case 0:
+			deckModel->sort(1, Qt::AscendingOrder, AbstractDecklistNode::ByName);
+			break;
+		case 1:
+			deckModel->sort(2, Qt::DescendingOrder, AbstractDecklistNode::ByPrice);
+			break;
+	}
 }
 
 void TabDeckEditor::updateCardInfoLeft(const QModelIndex &current, const QModelIndex &/*previous*/)

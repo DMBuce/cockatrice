@@ -33,6 +33,7 @@ class TabDeckEditor : public Tab {
 private slots:
 	void updateName(const QString &name);
 	void updateComments();
+	void sortDeck(int index);
 	void updateHash();
 	void updateCardInfoLeft(const QModelIndex &current, const QModelIndex &previous);
 	void updateCardInfoRight(const QModelIndex &current, const QModelIndex &previous);

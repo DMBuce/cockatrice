@@ -270,11 +270,11 @@ QModelIndex DeckListModel::nodeToIndex(AbstractDecklistNode *node) const
 	return createIndex(node->getParent()->indexOf(node), 0, node);
 }
 
-void DeckListModel::sortHelper(InnerDecklistNode *node, Qt::SortOrder order)
+void DeckListModel::sortHelper(InnerDecklistNode *node, Qt::SortOrder order, AbstractDecklistNode::SortMethod method)
 {
 	// Sort children of node and save the information needed to
 	// update the list of persistent indexes.
-	QVector<QPair<int, int> > sortResult = node->sort(order);
+	QVector<QPair<int, int> > sortResult = node->sort(order, method);
 	
 	QModelIndexList from, to;
 	for (int i = sortResult.size() - 1; i >= 0; --i) {
@@ -292,14 +292,14 @@ void DeckListModel::sortHelper(InnerDecklistNode *node, Qt::SortOrder order)
 	for (int i = node->size() - 1; i >= 0; --i) {
 		InnerDecklistNode *subNode = dynamic_cast<InnerDecklistNode *>(node->at(i));
 		if (subNode)
-			sortHelper(subNode, order);
+			sortHelper(subNode, order, method);
 	}
 }
 
-void DeckListModel::sort(int /*column*/, Qt::SortOrder order)
+void DeckListModel::sort(int /*column*/, Qt::SortOrder order, AbstractDecklistNode::SortMethod method)
 {
 	emit layoutAboutToBeChanged();
-	sortHelper(root, order);
+	sortHelper(root, order, method);
 	emit layoutChanged();
 }
 
