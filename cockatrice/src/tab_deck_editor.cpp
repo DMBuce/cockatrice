@@ -125,15 +125,29 @@ TabDeckEditor::TabDeckEditor(TabSupervisor *_tabSupervisor, QWidget *parent)
 	hashLabel1 = new QLabel();
 	hashLabel = new QLabel;
 
-	QGridLayout *grid = new QGridLayout;
-	grid->addWidget(nameLabel, 0, 0);
-	grid->addWidget(nameEdit, 0, 1);
+	sortLabel = new QLabel();
+	sortDropdown = new QComboBox;
+	groupLabel = new QLabel();
+	groupDropdown = new QComboBox;
+	sortDropdown->addItem(tr("Name"));
+	sortDropdown->addItem(tr("Price"));
+	groupDropdown->addItem(tr("Type"));
+	groupDropdown->addItem(tr("Mana Cost"));
 
-	grid->addWidget(commentsLabel, 1, 0);
-	grid->addWidget(commentsEdit, 1, 1);
+	QGridLayout *grid = new QGridLayout;
+	grid->addWidget(nameLabel, 0, 0, 1, 1, Qt::AlignRight);
+	grid->addWidget(nameEdit, 0, 1, 1, 5);
+
+	grid->addWidget(commentsLabel, 1, 0, 1, 1, Qt::AlignRight);
+	grid->addWidget(commentsEdit, 1, 1, 1, 5);
 	
-	grid->addWidget(hashLabel1, 2, 0);
-	grid->addWidget(hashLabel, 2, 1);
+	grid->addWidget(groupLabel, 2, 0, Qt::AlignRight);
+	grid->addWidget(groupDropdown, 2, 1);
+	grid->addWidget(sortLabel, 2, 2, Qt::AlignRight);
+	grid->addWidget(sortDropdown, 2, 3);
+	grid->addWidget(hashLabel1, 2, 4, Qt::AlignRight);
+	grid->addWidget(hashLabel, 2, 5);
+
 
         // Update price
         aUpdatePrices = new QAction(QString(), this);
@@ -262,6 +276,8 @@ void TabDeckEditor::retranslateUi()
 	nameLabel->setText(tr("Deck &name:"));
 	commentsLabel->setText(tr("&Comments:"));
 	hashLabel1->setText(tr("Hash:"));
+	sortLabel->setText(tr("Sort by:"));
+	groupLabel->setText(tr("Group by:"));
 	
 	aUpdatePrices->setText(tr("&Update prices"));
         aUpdatePrices->setShortcut(tr("Ctrl+U"));
