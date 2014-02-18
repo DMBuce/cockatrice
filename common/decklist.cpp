@@ -76,7 +76,7 @@ int AbstractDecklistNode::depth() const
 }
 
 InnerDecklistNode::InnerDecklistNode(InnerDecklistNode *other, InnerDecklistNode *_parent)
-	: AbstractDecklistNode(_parent), name(other->getName())
+	: AbstractDecklistNode(_parent), name(other->getName()), sortMethod(DeckSort::Default)
 {
 	for (int i = 0; i < other->size(); ++i) {
 		InnerDecklistNode *inner = dynamic_cast<InnerDecklistNode *>(other->at(i));
@@ -90,6 +90,20 @@ InnerDecklistNode::InnerDecklistNode(InnerDecklistNode *other, InnerDecklistNode
 InnerDecklistNode::~InnerDecklistNode()
 {
 	clearTree();
+}
+
+DeckSort::SortMethod InnerDecklistNode::getSortMethod() const {
+	if (parent)
+		return parent->getSortMethod();
+	else
+		return sortMethod;
+}
+
+void InnerDecklistNode::setSortMethod(const DeckSort::SortMethod &method) {
+	if (parent)
+		parent->setSortMethod(method);
+	else
+		sortMethod = method;
 }
 
 QString InnerDecklistNode::visibleNameFromName(const QString &_name)
@@ -164,6 +178,16 @@ float InnerDecklistNode::recursivePrice(bool countTotalCards) const
 
 bool InnerDecklistNode::compare(AbstractDecklistNode *other) const
 {
+	switch (getSortMethod()) {
+		case DeckSort::ByName:
+			return compareName(other);
+		case DeckSort::ByPrice:
+			return comparePrice(other);
+	}
+}
+
+bool InnerDecklistNode::compareName(AbstractDecklistNode *other) const
+{
 	InnerDecklistNode *other2 = dynamic_cast<InnerDecklistNode *>(other);
 	if (other2)
 		return (getName() > other->getName());
@@ -171,11 +195,40 @@ bool InnerDecklistNode::compare(AbstractDecklistNode *other) const
 		return false;
 }
 
+bool InnerDecklistNode::comparePrice(AbstractDecklistNode *other) const
+{
+	InnerDecklistNode *other2 = dynamic_cast<InnerDecklistNode *>(other);
+	if (other2)
+		return (recursivePrice(true) > other2->recursivePrice(true));
+	else
+		return false;
+}
+
 bool AbstractDecklistCardNode::compare(AbstractDecklistNode *other) const
+{
+	DeckSort::SortMethod sortMethod = parent ? parent->getSortMethod() : DeckSort::Default;
+	switch (sortMethod) {
+		case DeckSort::ByName:
+			return compareName(other);
+		case DeckSort::ByPrice:
+			return comparePrice(other);
+	}
+}
+
+bool AbstractDecklistCardNode::compareName(AbstractDecklistNode *other) const
 {
 	AbstractDecklistCardNode *other2 = dynamic_cast<AbstractDecklistCardNode *>(other);
 	if (other2)
 		return (getName() > other->getName());
+	else
+		return true;
+}
+
+bool AbstractDecklistCardNode::comparePrice(AbstractDecklistNode *other) const
+{
+	AbstractDecklistCardNode *other2 = dynamic_cast<AbstractDecklistCardNode *>(other);
+	if (other2)
+		return (getPrice() > other2->getPrice());
 	else
 		return true;
 }
