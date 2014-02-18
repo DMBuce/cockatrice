@@ -112,6 +112,7 @@ TabDeckEditor::TabDeckEditor(TabSupervisor *_tabSupervisor, QWidget *parent)
 	deckView->setUniformRowHeights(true);
 	deckView->header()->setResizeMode(QHeaderView::ResizeToContents);
 	connect(deckView->selectionModel(), SIGNAL(currentRowChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(updateCardInfoRight(const QModelIndex &, const QModelIndex &)));
+	connect(deckView->header(), SIGNAL(sectionClicked(int)), this, SLOT(updateSort(int)));
 
 	nameLabel = new QLabel();
 	nameEdit = new QLineEdit;
@@ -313,6 +314,20 @@ void TabDeckEditor::updateComments()
 {
 	deckModel->getDeckList()->setComments(commentsEdit->toPlainText());
 	setModified(true);
+}
+
+void TabDeckEditor::updateSort(int index)
+{
+	switch(index) {
+		case 0: // Sort by: Name
+			deckModel->getDeckList()->setSortMethod(DeckSort::ByName);
+			deckModel->sort(index, Qt::AscendingOrder);
+			break;
+		case 1: // Sort by: Price
+			deckModel->getDeckList()->setSortMethod(DeckSort::ByPrice);
+			deckModel->sort(index, Qt::DescendingOrder);
+			break;
+	}
 }
 
 void TabDeckEditor::updateCardInfoLeft(const QModelIndex &current, const QModelIndex &/*previous*/)
