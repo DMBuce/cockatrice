@@ -21,6 +21,11 @@ class QTextStream;
 
 class InnerDecklistNode;
 
+class DeckSort {
+	public:
+		enum SortMethod { ByName, ByPrice, Default = ByName };
+};
+
 class SideboardPlan {
 private:
 	QString name;
@@ -55,12 +60,15 @@ class InnerDecklistNode : public AbstractDecklistNode, public QList<AbstractDeck
 private:
 	QString name;
 	class compareFunctor;
+	DeckSort::SortMethod sortMethod;
 public:
-	InnerDecklistNode(const QString &_name = QString(), InnerDecklistNode *_parent = 0) : AbstractDecklistNode(_parent), name(_name) { }
+	InnerDecklistNode(const QString &_name = QString(), InnerDecklistNode *_parent = 0) : AbstractDecklistNode(_parent), name(_name), sortMethod(DeckSort::Default) { }
 	InnerDecklistNode(InnerDecklistNode *other, InnerDecklistNode *_parent = 0);
 	virtual ~InnerDecklistNode();
 	QString getName() const { return name; }
 	void setName(const QString &_name) { name = _name; }
+	DeckSort::SortMethod getSortMethod() const;
+	void setSortMethod(const DeckSort::SortMethod &method);
 	static QString visibleNameFromName(const QString &_name);
 	virtual QString getVisibleName() const;
 	void clearTree();
@@ -69,6 +77,8 @@ public:
 	int recursiveCount(bool countTotalCards = false) const;
         float recursivePrice(bool countTotalCards = false) const;
 	bool compare(AbstractDecklistNode *other) const;
+	bool compareName(AbstractDecklistNode *other) const;
+	bool comparePrice(AbstractDecklistNode *other) const;
 	QVector<QPair<int, int> > sort(Qt::SortOrder order = Qt::AscendingOrder);
 	
 	bool readElement(QXmlStreamReader *xml);
@@ -87,6 +97,8 @@ public:
         float getTotalPrice() const { return getNumber() * getPrice(); }
 	int height() const { return 0; }
 	bool compare(AbstractDecklistNode *other) const;
+	bool compareName(AbstractDecklistNode *other) const;
+	bool comparePrice(AbstractDecklistNode *other) const;
 	
 	bool readElement(QXmlStreamReader *xml);
 	void writeElement(QXmlStreamWriter *xml);
@@ -131,6 +143,7 @@ public:
 	QString getComments() const { return comments; }
 	QList<MoveCard_ToZone> getCurrentSideboardPlan();
 	void setCurrentSideboardPlan(const QList<MoveCard_ToZone> &plan);
+	void setSortMethod(const DeckSort::SortMethod &method) { if (root) root->setSortMethod(method); }
 	const QMap<QString, SideboardPlan *> &getSideboardPlans() const { return sideboardPlans; }
 
 	bool readElement(QXmlStreamReader *xml);
