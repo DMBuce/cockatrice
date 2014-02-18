@@ -4,7 +4,6 @@
 #include "tab.h"
 #include <QAbstractItemModel>
 #include <QLineEdit>
-#include <QComboBox>
 
 class CardDatabaseModel;
 class CardDatabaseDisplayModel;
@@ -82,10 +81,6 @@ private:
 	QTextEdit *commentsEdit;
 	QLabel *hashLabel1;
 	QLabel *hashLabel;
-	QLabel *sortLabel;
-	QComboBox *sortDropdown;
-	QLabel *groupLabel;
-	QComboBox *groupDropdown;
 	DlgCardSearch *dlgCardSearch;
 
 	QMenu *deckMenu, *dbMenu;
